@@ -1,0 +1,31 @@
+name: Go Test
+on: [ push, pull_request ]
+
+jobs:
+  unit:
+    name: Unit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.20.x"
+      - name: Install FoundationDB Client C bindings
+        env:
+          FDB_VERSION: '7.1.33'
+          FDB_CLIENTS_DEB_SHA256_SUM: 'd73002bc796de7ce0158f1eb64fab1f8e90bada2edd90599d9b40754220150af'
+        shell: bash
+        run: |
+          wget "https://github.com/apple/foundationdb/releases/download/${FDB_VERSION}/foundationdb-clients_${FDB_VERSION}-1_amd64.deb"
+          echo "${FDB_CLIENTS_DEB_SHA256_SUM}  foundationdb-clients_${FDB_VERSION}-1_amd64.deb" | sha256sum --check
+          sudo dpkg --force-all -i foundationdb-clients_${FDB_VERSION}-1_amd64.deb
+      - name: Go information
+        run: |
+          go version
+          go env
+      - name: Run tests
+        run: go test -v -shuffle=on ./...
+      - name: Run tests with race detector
+        run: go test -v -race ./...
