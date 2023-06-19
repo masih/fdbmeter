@@ -3,7 +3,7 @@ package fdbmeter
 type Status struct {
 	Client struct {
 		ClusterFile struct {
-			Path     string `json:"path"`
+			Path     string `json:"path" fdbmeter:"skip"`
 			UpToDate bool   `json:"up_to_date"`
 		} `json:"cluster_file"`
 		Coordinators struct {
@@ -67,7 +67,7 @@ type Status struct {
 			TenantMode                     string `json:"tenant_mode"`
 			UsableRegions                  int    `json:"usable_regions"`
 		} `json:"configuration"`
-		ConnectionString string `json:"connection_string"`
+		ConnectionString string `json:"connection_string" fdbmeter:"skip"`
 		Data             struct {
 			AveragePartitionSizeBytes             int   `json:"average_partition_size_bytes"`
 			LeastOperatingSpaceBytesLogServer     int64 `json:"least_operating_space_bytes_log_server"`
@@ -80,10 +80,10 @@ type Status struct {
 			} `json:"moving_data"`
 			PartitionsCount int `json:"partitions_count"`
 			State           struct {
-				Description          string `json:"description" fdbmeter:"attr"`
+				Description          string `json:"description"`
 				Healthy              bool   `json:"healthy"`
 				MinReplicasRemaining int    `json:"min_replicas_remaining"`
-				Name                 string `json:"name" fdbmeter:"attr"`
+				Name                 string `json:"name"`
 			} `json:"state"`
 			SystemKvSizeBytes int `json:"system_kv_size_bytes"`
 			TeamTrackers      []struct {
@@ -123,7 +123,7 @@ type Status struct {
 			TransactionStartSeconds                  float64 `json:"transaction_start_seconds"`
 		} `json:"latency_probe"`
 		Layers struct {
-			Error string `json:"_error" fdbmeter:"attr"`
+			Error string `json:"_error"`
 			Valid bool   `json:"_valid"`
 		} `json:"layers"`
 		Logs []struct {

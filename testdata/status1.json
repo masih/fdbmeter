@@ -33,7 +33,7 @@
     "timestamp": 1686137027
   },
   "cluster": {
-    "active_primary_dc": "",
+    "active_primary_dc": "abc",
     "active_tss_count": 0,
     "bounce_impact": {
       "can_clean_bounce": true

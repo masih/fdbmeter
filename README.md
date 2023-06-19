@@ -9,8 +9,6 @@
 * Periodically fetches and caches FoundationDB status.
 * Exposes a REST endpoint at `/status` to serve the raw JSON for further debugging.
 * Supports custom struct tags to customize metric reporting using the key `fdbmeter`; see [`model`](model.go).
-  * `fdbmeter:"attr"` explicitly includes a `string` field as an attribute.
-    * Note that strings in array or map are automatically added as Prometheus metric attributes.
   * `fdbmeter:"skip"` excludes a field from metric reporting or an attribute. 
   * `fdbmeter:"key=<custom-key>"` customizes the `key` attribute of `map` fields.
 ## Metrics
