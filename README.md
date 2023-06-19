@@ -282,6 +282,8 @@ $ go install github.com/ipni/fdbmeter/cmd/fdbmeter@latest
 ```shell
 $ fdbmeter --help
 Usage of fdbmeter
+  -commonAttributes string
+        The common attributes to apply to all metrices specified as comma separated key=value.
   -fdbApiVersion int
         The FoundationDB API version. (default 710)
   -fdbClusterFile string

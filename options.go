@@ -1,6 +1,10 @@
 package fdbmeter
 
-import "time"
+import (
+	"time"
+
+	"go.opentelemetry.io/otel/attribute"
+)
 
 type (
 	Option  func(*options) error
@@ -9,6 +13,7 @@ type (
 		fdbApiVersion         int
 		fdbClusterFile        string
 		statusRefreshInterval *time.Ticker
+		commonAttributes      []attribute.KeyValue
 	}
 )
 
@@ -32,21 +37,31 @@ func WithHttpListenAddr(a string) Option {
 		return nil
 	}
 }
+
 func WithFdbApiVersion(v int) Option {
 	return func(o *options) error {
 		o.fdbApiVersion = v
 		return nil
 	}
 }
+
 func WithFdbClusterFile(cf string) Option {
 	return func(o *options) error {
 		o.fdbClusterFile = cf
 		return nil
 	}
 }
+
 func WithStatusRefreshInterval(d time.Duration) Option {
 	return func(o *options) error {
 		o.statusRefreshInterval = time.NewTicker(d)
+		return nil
+	}
+}
+
+func WithCommonAttributes(a ...attribute.KeyValue) Option {
+	return func(o *options) error {
+		o.commonAttributes = a
 		return nil
 	}
 }

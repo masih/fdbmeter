@@ -28,7 +28,7 @@ func New(o ...Option) (*FDBMeter, error) {
 	if err != nil {
 		return nil, err
 	}
-	metrics, err := NewMetrics()
+	metrics, err := NewMetrics(opts.commonAttributes...)
 	if err != nil {
 		return nil, err
 	}
