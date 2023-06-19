@@ -25,7 +25,20 @@ func TestMetricsPopulatesValues(t *testing.T) {
 					},
 				},
 				"cluster_data_state_healthy": {
-					{int64Value: 0, attrs: attribute.NewSet(attribute.String("description", "Only one replica remains of some data"), attribute.String("name", "healing"))},
+					{int64Value: 0, attrs: attribute.NewSet(
+						attribute.String("active_primary_dc", "abc"),
+						attribute.String("description", "Only one replica remains of some data"),
+						attribute.String("name", "healing"),
+						attribute.String("protocol_version", "fdb00b071010000"),
+					)},
+				},
+				"cluster_qos_performance_limited_by_reason_id": {
+					{int64Value: 1, attrs: attribute.NewSet(
+						attribute.String("active_primary_dc", "abc"),
+						attribute.String("description", "Storage server performance (storage queue)."),
+						attribute.String("name", "storage_server_write_queue_size"),
+						attribute.String("protocol_version", "fdb00b071010000"),
+					)},
 				},
 			},
 		},
@@ -35,13 +48,19 @@ func TestMetricsPopulatesValues(t *testing.T) {
 				"cluster_workload_operations_writes_hz": {
 					{
 						float64Value: 342887,
-						attrs:        attribute.NewSet(),
+						attrs: attribute.NewSet(
+							attribute.String("active_primary_dc", ""),
+							attribute.String("protocol_version", "fdb00b071010000"),
+						),
 					},
 				},
 				"cluster_latency_probe_immediate_priority_transaction_start_seconds": {
 					{
 						float64Value: 0.6852229999999999,
-						attrs:        attribute.NewSet(),
+						attrs: attribute.NewSet(
+							attribute.String("active_primary_dc", ""),
+							attribute.String("protocol_version", "fdb00b071010000"),
+						),
 					},
 				},
 			},
