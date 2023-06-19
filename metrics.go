@@ -24,6 +24,7 @@ type (
 
 		observablesLock sync.RWMutex
 		observables     map[string][]observable
+		commonAttrs     []attribute.KeyValue
 	}
 	observable struct {
 		int64Value   int64
@@ -32,8 +33,10 @@ type (
 	}
 )
 
-func NewMetrics() (*Metrics, error) {
-	var m Metrics
+func NewMetrics(commonAttrs ...attribute.KeyValue) (*Metrics, error) {
+	m := Metrics{
+		commonAttrs: commonAttrs,
+	}
 	var err error
 	m.exporter, err = prometheus.New(prometheus.WithoutUnits(),
 		prometheus.WithoutScopeInfo(),
@@ -70,22 +73,22 @@ func (m *Metrics) shutdown(ctx context.Context) error {
 }
 
 func (m *Metrics) notifyStatusTransactFailed(ctx context.Context) {
-	m.getStatusFailureCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("err", "transact")))
+	m.getStatusFailureCounter.Add(ctx, 1, metric.WithAttributes(append(m.commonAttrs, attribute.String("err", "transact"))...))
 }
 
 func (m *Metrics) notifyStatusDecodeFailed(ctx context.Context) {
-	m.getStatusFailureCounter.Add(ctx, 1, metric.WithAttributes(attribute.String("err", "decode")))
+	m.getStatusFailureCounter.Add(ctx, 1, metric.WithAttributes(append(m.commonAttrs, attribute.String("err", "decode"))...))
 }
 
 func (m *Metrics) notifyGetStatusLatency(ctx context.Context, latency time.Duration) {
-	m.getStatusLatencyHistogram.Record(ctx, latency.Milliseconds())
+	m.getStatusLatencyHistogram.Record(ctx, latency.Milliseconds(), metric.WithAttributes(m.commonAttrs...))
 }
 
 func (m *Metrics) notifyStatus(ctx context.Context, status Status) {
 	observables := make(map[string][]observable)
 	populateObservables(ctx, traversalContext{
 		f: reflect.ValueOf(status),
-	}, observables)
+	}, observables, m.commonAttrs)
 
 	m.observablesLock.Lock()
 	defer m.observablesLock.Unlock()
@@ -100,7 +103,7 @@ type traversalContext struct {
 	tag        reflect.StructTag
 }
 
-func populateObservables(ctx context.Context, tctx traversalContext, observables map[string][]observable) {
+func populateObservables(ctx context.Context, tctx traversalContext, observables map[string][]observable, commonAttrs []attribute.KeyValue) {
 	switch tctx.f.Kind() {
 	case reflect.Struct:
 		if tctx.metricName != "" {
@@ -151,7 +154,7 @@ func populateObservables(ctx context.Context, tctx traversalContext, observables
 					metricName: tctx.metricName + field.Tag.Get("json"),
 					attrs:      tctx.attrs,
 					tag:        field.Tag,
-				}, observables)
+				}, observables, commonAttrs)
 			}
 		}
 	case reflect.Slice:
@@ -173,7 +176,7 @@ func populateObservables(ctx context.Context, tctx traversalContext, observables
 						metricName: tctx.metricName,
 						attrs:      tctx.attrs,
 						tag:        tctx.tag,
-					}, observables)
+					}, observables, commonAttrs)
 				}
 			}
 		}
@@ -203,7 +206,7 @@ func populateObservables(ctx context.Context, tctx traversalContext, observables
 					metricName: tctx.metricName,
 					attrs:      tctx.attrs,
 					tag:        tctx.tag,
-				}, observables)
+				}, observables, commonAttrs)
 			}
 		}
 	case reflect.Bool:
@@ -213,22 +216,22 @@ func populateObservables(ctx context.Context, tctx traversalContext, observables
 		}
 		observables[tctx.metricName] = append(observables[tctx.metricName], observable{
 			int64Value: v,
-			attrs:      attribute.NewSet(tctx.attrs...),
+			attrs:      attribute.NewSet(append(commonAttrs, tctx.attrs...)...),
 		})
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		observables[tctx.metricName] = append(observables[tctx.metricName], observable{
 			int64Value: tctx.f.Int(),
-			attrs:      attribute.NewSet(tctx.attrs...),
+			attrs:      attribute.NewSet(append(commonAttrs, tctx.attrs...)...),
 		})
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		observables[tctx.metricName] = append(observables[tctx.metricName], observable{
 			int64Value: int64(tctx.f.Uint()),
-			attrs:      attribute.NewSet(tctx.attrs...),
+			attrs:      attribute.NewSet(append(commonAttrs, tctx.attrs...)...),
 		})
 	case reflect.Float32, reflect.Float64:
 		observables[tctx.metricName] = append(observables[tctx.metricName], observable{
 			float64Value: tctx.f.Float(),
-			attrs:        attribute.NewSet(tctx.attrs...),
+			attrs:        attribute.NewSet(append(commonAttrs, tctx.attrs...)...),
 		})
 	}
 }
