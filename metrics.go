@@ -152,20 +152,18 @@ func populateObservables(ctx context.Context, tctx traversalContext, observables
 				return
 			}
 		}
-		elems, ok := tctx.field.Interface().([]any)
-		if ok {
-			for _, elem := range elems {
-				select {
-				case <-ctx.Done():
-					return
-				default:
-					populateObservables(ctx, traversalContext{
-						field:      reflect.ValueOf(elem),
-						metricName: tctx.metricName,
-						attrs:      tctx.attrs,
-						tag:        tctx.tag,
-					}, observables, commonAttrs)
-				}
+		elems := reflect.ValueOf(tctx.field.Interface())
+		for i := 0; i < elems.Len(); i++ {
+			select {
+			case <-ctx.Done():
+				return
+			default:
+				populateObservables(ctx, traversalContext{
+					field:      elems.Index(i),
+					metricName: tctx.metricName,
+					attrs:      tctx.attrs,
+					tag:        tctx.tag,
+				}, observables, commonAttrs)
 			}
 		}
 	case reflect.Map:

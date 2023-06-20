@@ -3,6 +3,7 @@ package fdbmeter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"reflect"
 	"testing"
@@ -22,6 +23,24 @@ func TestMetricsPopulatesValues(t *testing.T) {
 					{
 						int64Value: 1,
 						attrs:      attribute.NewSet(),
+					},
+				},
+				"cluster_processes_roles_bytes_queried_counter": {
+					{
+						int64Value: 75292021001,
+						attrs: attribute.NewSet(
+							attribute.String("active_primary_dc", "abc"),
+							attribute.String("address", "20.10.7.15:4509"),
+							attribute.String("class_source", "command_line"),
+							attribute.String("class_type", "storage"),
+							attribute.String("fault_domain", "ip-1-2-7-106"),
+							attribute.String("id", "1d43ff854cd58260"),
+							attribute.String("machine_id", "ip-1-2-7-106"),
+							attribute.String("process_id", "1e5c1cb8cafedd3b4aa335c91c008e5d"),
+							attribute.String("protocol_version", "fdb00b071010000"),
+							attribute.String("role", "storage"),
+							attribute.String("version", "7.1.33"),
+						),
 					},
 				},
 				"cluster_data_state_healthy": {
@@ -63,6 +82,18 @@ func TestMetricsPopulatesValues(t *testing.T) {
 						),
 					},
 				},
+				"cluster_machines_memory_free_bytes": {
+					{
+						int64Value: 63909851136,
+						attrs: attribute.NewSet(
+							attribute.String("active_primary_dc", ""),
+							attribute.String("address", "20.10.5.192"),
+							attribute.String("machine_id", "ip-1-2-5-156"),
+							attribute.String("name", "ip-1-2-5-156"),
+							attribute.String("protocol_version", "fdb00b071010000"),
+						),
+					},
+				},
 			},
 		},
 	}
@@ -88,19 +119,38 @@ func TestMetricsPopulatesValues(t *testing.T) {
 			}
 			subject.notifyStatus(context.Background(), status)
 
+			// Assert that there are no duplicate attributes for the same metric name.
+			for metric, observables := range subject.observables {
+				seen := make(map[string]struct{})
+				for _, o := range observables {
+					key := fmt.Sprintf("%v", o)
+					if _, exists := seen[key]; exists {
+						t.Fatal("duplicate observable for metric ", metric)
+					} else {
+						seen[key] = struct{}{}
+					}
+				}
+			}
+
+		WantLoop:
 			for k, want := range test.want {
 
 				got := subject.observables[k]
-				if len(got) != len(want) {
-					t.Fatal()
-				}
-
-				for i, target := range got {
-					if !reflect.DeepEqual(want[i], target) {
-						t.Fatal(want[i], " got ", target)
+				switch len(want) {
+				case 0:
+					if len(got) != 0 {
+						t.Fatal("expected no observables")
 					}
+				default:
+					for _, target := range got {
+						for _, wantObservable := range want {
+							if reflect.DeepEqual(wantObservable, target) {
+								continue WantLoop
+							}
+						}
+					}
+					t.Fatal("did not find expected observable for ", k)
 				}
-
 			}
 		})
 	}
