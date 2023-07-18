@@ -14,8 +14,8 @@ jobs:
           go-version: "1.20.x"
       - name: Install FoundationDB Client C bindings
         env:
-          FDB_VERSION: '7.1.33'
-          FDB_CLIENTS_DEB_SHA256_SUM: 'd73002bc796de7ce0158f1eb64fab1f8e90bada2edd90599d9b40754220150af'
+          FDB_VERSION: '7.3.7'
+          FDB_CLIENTS_DEB_SHA256_SUM: '1b620971319c3ad149f2fb09b2fed639fb558120a296538133c4f2358836e983'
         shell: bash
         run: |
           wget "https://github.com/apple/foundationdb/releases/download/${FDB_VERSION}/foundationdb-clients_${FDB_VERSION}-1_amd64.deb"

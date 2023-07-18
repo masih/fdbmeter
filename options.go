@@ -20,7 +20,7 @@ type (
 func newOptions(o ...Option) (*options, error) {
 	opts := options{
 		httpListenAddr:        "0.0.0.0:40080",
-		fdbApiVersion:         710,
+		fdbApiVersion:         730,
 		statusRefreshInterval: time.NewTicker(10 * time.Second),
 	}
 	for _, apply := range o {
