@@ -3,9 +3,9 @@ module github.com/masih/fdbmeter
 go 1.20
 
 require (
-	// Foundation DB golang binding version 7.1.33
-	// See: https://github.com/apple/foundationdb/tree/7.1.33/bindings/go
-	github.com/apple/foundationdb/bindings/go v0.0.0-20230508183941-1098aa0251f4
+	// Foundation DB golang binding version 7.3.7
+	// See: https://github.com/apple/foundationdb/tree/7.3.7/bindings/go
+	github.com/apple/foundationdb/bindings/go v0.0.0-20230710184144-e3b440ca0859
 	github.com/prometheus/client_golang v1.15.1
 	go.opentelemetry.io/otel v1.16.0
 	go.opentelemetry.io/otel/exporters/prometheus v0.39.0
@@ -26,6 +26,5 @@ require (
 	go.opentelemetry.io/otel/sdk v1.16.0 // indirect
 	go.opentelemetry.io/otel/trace v1.16.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
-	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 )

@@ -16,8 +16,10 @@ RUN go build -o /go/bin/fdbmeter ./cmd/fdbmeter
 FROM gcr.io/distroless/base-debian11
 
 COPY --from=build /go/bin/fdbmeter /usr/bin/
-COPY --from=build /usr/lib/libfdb_c.so /usr/lib/libfdb_c.so
-COPY --from=build /lib/x86_64-linux-gnu/liblzma.so.5.2.5 /usr/lib/liblzma.so.5
+COPY --from=build /usr/lib/libfdb_c.so \
+                  /lib/x86_64-linux-gnu/liblzma.so.5 \
+                  /lib/x86_64-linux-gnu/libz.so.1 \
+                  /usr/lib/
 COPY --from=build /usr/include/foundationdb /usr/include/foundationdb
 
 ENTRYPOINT ["/usr/bin/fdbmeter"]
