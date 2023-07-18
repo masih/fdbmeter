@@ -15,10 +15,10 @@ import (
 
 func main() {
 	httpListenAddr := flag.String("httpListenAddr", "0.0.0.0:40080", "The bind address of fdbmeter HTTP server.")
-	fdbApiVersion := flag.Int("fdbApiVersion", 710, "The FoundationDB API version.")
+	fdbApiVersion := flag.Int("fdbApiVersion", 730, "The FoundationDB API version.")
 	fdbClusterFile := flag.String("fdbClusterFile", "", "Path to the FoundationDB cluster file.")
 	statusRefreshInterval := flag.Duration("statusRefreshInterval", 10*time.Second, "The interval at which to refresh the FoundationDB status.")
-	commonAttributes := flag.String("commonAttributes", "", "The common attributes to apply to all metrices specified as comma separated key=value.")
+	commonAttributes := flag.String("commonAttributes", "", "The common attributes to apply to all metrics specified as comma separated key=value.")
 	flag.Parse()
 
 	var commonAttrs []attribute.KeyValue
