@@ -177,8 +177,8 @@ type Status struct {
 			Name        string `json:"name"`
 		} `json:"messages"`
 		PageCache struct {
-			LogHitRate     int `json:"log_hit_rate"`
-			StorageHitRate int `json:"storage_hit_rate"`
+			LogHitRate     float64 `json:"log_hit_rate"`
+			StorageHitRate float64 `json:"storage_hit_rate"`
 		} `json:"page_cache"`
 		Processes map[string]struct {
 			Address     string `json:"address"`
