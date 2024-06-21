@@ -511,8 +511,8 @@
       }
     ],
     "page_cache": {
-      "log_hit_rate": 1,
-      "storage_hit_rate": 1
+      "log_hit_rate": 0.99832799999999999,
+      "storage_hit_rate": 0.99840299999999993
     },
     "processes": {
       "05ab57c2b7cd6b51e62a1390da76217a": {
